@@ -1,0 +1,14 @@
+noun(N):-
+	member(N,[aku, kamu, dia]).
+
+
+verb(V) :-
+	member(V,[makan, minum]).
+
+
+sentence(S) :-
+	noun(N),
+	verb(V),
+	append(N,V,S).
+
+
