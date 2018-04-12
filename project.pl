@@ -69,28 +69,33 @@ frasa_kata_kerja_rumit(FKKR, frasakatakerjarumit(FRASAVERBAL, FRASAMAJEMUK)):-
 
 %% sentence kata kerja majemuk  :
 
-sentence(S, frasa_kata_kerja_majemuk(PRONOMINA, FRASAKATAKERJARUMIT)):-
+    sentence(S, frasa_kata_kerja_majemuk(PRONOMINA, FRASAKATAKERJARUMIT)):-
     append(PN, FKKR, S),
     kataganti(PN, PRONOMINA),
     frasa_kata_kerja_rumit(FKKR, FRASAKATAKERJARUMIT).
 
 %% sentence frasa biasa :
 
-sentence(S, frasa_biasa(NOMINA, FRASABIASASEDERHANA))   :-
+    sentence(S, frasa_biasa(NOMINA, FRASABIASASEDERHANA))   :-
     append(N, FBS, S),
     katabenda(N, NOMINA),
     frasa_biasa_sederhana(FBS, FRASABIASASEDERHANA).
 
 %%  sentence frasa verbal                               :
 
-sentence(S, frasa_verbal(KETERANGANWAKTU, VERBA))       :-
+    sentence(S, frasa_verbal(KETERANGANWAKTU, VERBA))       :-
     append(KW, V, S),
     kataketeranganwaktu(KW, KETERANGANWAKTU),
     katakerja(V, VERBA).
 
-sentence(S, frasa_verbal(ADVERBIA, VERBA))              :-
+    sentence(S, frasa_verbal(ADVERBIA, VERBA))              :-
     append(AV, V, S),
     kataketerangan(AV, ADVERBIA),
+    katakerja(V, VERBA).
+
+    sentence(S, frasa_verbal(PRONOMINA, VERBA))             :-
+    append(PN, V, S),
+    kataganti(PN, PRONOMINA),
     katakerja(V, VERBA).
 
 %% sentence frasa nominal                               :
