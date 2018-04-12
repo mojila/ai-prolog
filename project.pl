@@ -5,10 +5,11 @@ kataketeranganwaktu([KW], keteranganwaktu(KW))          :-
 
 katakerja([V], verba(V))                                :-
     member(V, [tidur,muncul,datang,makan,selesai,beli,
-    renang,main]).
+    renang,main,belajar]).
 
 kataketerangan([AV], adverbia(AV))                      :-
-    member(AV, [tidak,sangat,cukup,sekali,sudah]).
+    member(AV, [tidak,sangat,cukup,sekali,sudah,
+    bersama]).
 
 katabenda([N], nomina(N))                               :-
     member(N, [rumah,kayu,sepatu,kaca,
@@ -23,7 +24,7 @@ katadepan([PP], preposisi(PP))                          :-
     member(PP, [dari,ke,dengan,di]).
 
 kataganti([PN], pronomina(PN))                          :-
-    member(PN, [sana,saya,aku]).
+    member(PN, [sana,saya,aku,mereka,kamu]).
 
 katasambung([KJ], konjungsi(KJ))                        :-
     member(KJ, [oleh,dan]).
@@ -47,6 +48,11 @@ frasa_verbal(FV, frasaverbal(KETERANGANWAKTU, VERBA)):-
     kataketeranganwaktu(KW, KETERANGANWAKTU),
     katakerja(V, VERBA).
 
+frasa_verbal_penekanan(FVP, frasaverbalpenekanan(VERBA, ADVERBIA)):-
+    append(V,AV,FVP),
+    katakerja(V, VERBA),
+    kataketerangan(AV, ADVERBIA).
+
 %%  frasa nominal                                       :
 
 %%  frasa adjektiva                                     :
@@ -67,6 +73,35 @@ frasa_kata_kerja_rumit(FKKR, frasakatakerjarumit(FRASAVERBAL, FRASAMAJEMUK)):-
     frasa_verbal(FV, FRASAVERBAL),
     frasa_majemuk(FM, FRASAMAJEMUK).
 
+%%  frasa double dan triple subject :
+
+frasa_kataganti_majemuk(FKM, frasakatagantimajemuk(KONJUNGSI, PRONOMINA)):-
+    append(KJ, PN, FKM),
+    katasambung(KJ, KONJUNGSI),
+    kataganti(PN, PRONOMINA).
+
+frasa_kataganti_majemuk_rumit(FKMR, frasakatagantimajemukrumit(PRONOMINA, FRASAKATAGANTIMAJEMUK)):-
+    append(PN, FKM, FKMR),
+    kataganti(PN, PRONOMINA),
+    frasa_kataganti_majemuk(FKM, FRASAKATAGANTIMAJEMUK).
+
+frasa_kataganti_verbal_ganda(FKVG, frasakatagantiverbalganda(FRASAKATAGANTIMAJEMUKRUMIT, FRASAVERBALPENEKANAN)):-
+    append(FKMR, FVP, FKVG),
+    frasa_kataganti_majemuk_rumit(FKMR, FRASAKATAGANTIMAJEMUKRUMIT),
+    frasa_verbal_penekanan(FVP, FRASAVERBALPENEKANAN).
+
+%% sentence double triple subject
+
+    sentence(S, frasa_subjek_verbal_ganda(PRONOMINA, FRASAKATAGANTIVERBALGANDA)):-
+    append(PN, FKVG, S),
+    kataganti(PN, PRONOMINA),
+    frasa_kataganti_verbal_ganda(FKVG, FRASAKATAGANTIVERBALGANDA).
+
+    sentence(S, frasa_subjek_verbal_ganda(FRASAKATAGANTIMAJEMUKRUMIT, FRASAVERBALPENEKANAN)):-
+    append(FKMR, FVP, S),
+    frasa_kataganti_majemuk_rumit(FKMR, FRASAKATAGANTIMAJEMUKRUMIT),
+    frasa_verbal_penekanan(FVP, FRASAVERBALPENEKANAN).
+
 %% sentence kata kerja majemuk  :
 
     sentence(S, frasa_kata_kerja_majemuk(PRONOMINA, FRASAKATAKERJARUMIT)):-
@@ -81,6 +116,11 @@ frasa_kata_kerja_rumit(FKKR, frasakatakerjarumit(FRASAVERBAL, FRASAMAJEMUK)):-
     katabenda(N, NOMINA),
     frasa_biasa_sederhana(FBS, FRASABIASASEDERHANA).
 
+    sentence(S, frasa_subject_verbal_penekanan(PRONOMINA, FRASAVERBALPENEKANAN)):-
+    append(PN, FVP, S),
+    kataganti(PN, PRONOMINA),
+    frasa_verbal_penekanan(FVP, FRASAVERBALPENEKANAN).
+
 %%  sentence frasa verbal                               :
 
     sentence(S, frasa_verbal(KETERANGANWAKTU, VERBA))       :-
@@ -92,6 +132,11 @@ frasa_kata_kerja_rumit(FKKR, frasakatakerjarumit(FRASAVERBAL, FRASAMAJEMUK)):-
     append(AV, V, S),
     kataketerangan(AV, ADVERBIA),
     katakerja(V, VERBA).
+
+    sentence(S, frasa_verbal(VERBA, ADVERBIA))              :-
+    append(V, AV, S),
+    katakerja(V, VERBA),
+    kataketerangan(AV, ADVERBIA).
 
     sentence(S, frasa_verbal(PRONOMINA, VERBA))             :-
     append(PN, V, S),
